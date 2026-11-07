@@ -543,7 +543,7 @@ document.addEventListener("submit",async e=>{ if(e.target.id!=="cfg") return; e.
   try{ await db.doc("config/geral").set({...S.config,...out}); toast("Dados salvos."); }catch(x){ toast("Não foi possível salvar."); } });
 
 /* ---------- boot (GitHub Pages + Google Apps Script) ---------- */
-const API_URL="__API_URL__";
+const API_URL="https://script.google.com/macros/s/AKfycbz3vdFdg3gp9d7KHvZ-6baP6twUFUgW_YM4CxxDPcIHUYuiT6WTFQSZqb_yqF4bl2U8LQ/exec";
 const API={code:"",nivel:null,data:{},loaded:false,L:{},Lcfg:[]};
 try{ API.code=localStorage.getItem("cond.code")||""; }catch(x){}
 async function api(body){
