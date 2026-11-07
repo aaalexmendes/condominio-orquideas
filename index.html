@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="brasao.png">
+<meta name="robots" content="noindex,nofollow">
+<title>Condomínio Jardim das Orquídeas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: livro do condomínio — cabeçalho-ficha, abas, conteúdo em painéis */
+:root{
+  --paper:#EFF1EC; --sheet:#FFFFFF; --ink:#1C231F; --ink-2:#55615A; --ink-3:#88938C;
+  --rule:#D4DAD3; --rule-strong:#AEB8AF;
+  --accent:#2F5D46; --accent-soft:#DDEBE2; --accent-ink:#FFFFFF;
+  --ok:#2C7A4B; --ok-soft:#DDEFE3; --warn:#9A6512; --warn-soft:#F6EAD2; --bad:#B0281F; --bad-soft:#F7DEDB; --info:#1D5884; --info-soft:#DCE8F1;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#111613; --sheet:#19201C; --ink:#E4EAE6; --ink-2:#A2AEA7; --ink-3:#6F7B74;
+  --rule:#2A332E; --rule-strong:#435049;
+  --accent:#79C29B; --accent-soft:#1B3427; --accent-ink:#0D1A13;
+  --ok:#62C48C; --ok-soft:#173226; --warn:#E3AE52; --warn-soft:#352A14; --bad:#F2806F; --bad-soft:#3A1C19; --info:#74AEDB; --info-soft:#1C3244;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#111613; --sheet:#19201C; --ink:#E4EAE6; --ink-2:#A2AEA7; --ink-3:#6F7B74;
+  --rule:#2A332E; --rule-strong:#435049;
+  --accent:#79C29B; --accent-soft:#1B3427; --accent-ink:#0D1A13;
+  --ok:#62C48C; --ok-soft:#173226; --warn:#E3AE52; --warn-soft:#352A14; --bad:#F2806F; --bad-soft:#3A1C19; --info:#74AEDB; --info-soft:#1C3244;
+  color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{overflow-x:clip}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;overflow-x:clip}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:16px;padding-block:16px 48px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h2{font-size:1.35rem;font-weight:700;font-stretch:88%}
+h3{font-size:1rem;font-weight:700;font-stretch:92%}
+p{margin:0}
+a{color:var(--accent)}
+.num{font-variant-numeric:tabular-nums;font-family:var(--f-mono);font-size:.86rem}
+.lbl{font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.muted{color:var(--ink-2)} .small{font-size:.82rem}
+
+/* Ficha */
+.ficha{display:grid;grid-template-columns:minmax(0,2.2fr) repeat(4,minmax(0,1fr));border:1.5px solid var(--ink);background:var(--sheet)}
+.ficha>div{padding:10px 12px;border-right:1px solid var(--rule-strong);border-bottom:1px solid var(--rule-strong);min-width:0}
+.ficha .titulo{grid-row:span 2;display:flex;flex-direction:column;justify-content:space-between;gap:10px}
+.ficha .marca{display:flex;align-items:center;gap:14px}.ficha .marca img{width:72px;height:auto;flex:none;background:#fff;border-radius:6px;padding:3px}
+.ficha h1{font-size:clamp(1.3rem,2.4vw,1.85rem);font-weight:800;font-stretch:75%;text-transform:uppercase;letter-spacing:-.01em}
+.ficha .v{font-family:var(--f-mono);font-size:.9rem;margin-top:2px;overflow-wrap:anywhere}
+@media (max-width:860px){.ficha{grid-template-columns:repeat(2,minmax(0,1fr))}.ficha .titulo{grid-column:1/-1;grid-row:auto}}
+
+.tabs{position:sticky;top:0;z-index:5;background:var(--paper);display:flex;gap:2px;overflow-x:auto;margin-top:14px;border-bottom:1.5px solid var(--ink);scrollbar-width:thin}
+.tabs button{appearance:none;border:0;background:none;color:var(--ink-2);font:600 .84rem var(--f-body);padding:9px 12px;border-radius:var(--r) var(--r) 0 0;cursor:pointer;white-space:nowrap}
+.tabs button:hover{color:var(--ink);background:var(--sheet)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.banner{margin-top:12px;padding:10px 12px;border:1px dashed var(--warn);background:var(--warn-soft);border-radius:var(--r);font-size:.86rem}
+section.tab{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px}
+.head .desc{max-width:75ch;color:var(--ink-2);font-size:.88rem;margin-top:4px}
+.panel{background:var(--sheet);border:1px solid var(--rule);border-radius:var(--r);padding:16px;min-width:0}
+.mapa img{display:block;width:100%;max-width:860px;margin:0 auto;height:auto;border-radius:6px;background:#fff}
+tr.grp td{background:var(--accent-soft);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+tr.sub td,tr.res td{font-weight:700;border-top:1.5px solid var(--ink)} tr.acum td{color:var(--ink-2);font-size:.85rem}
+.dre td,.dre th{white-space:nowrap}
+.modo{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:10px;font-size:.8rem;color:var(--ink-2)}
+.g2{display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:900px){.g2{grid-template-columns:minmax(0,1fr)}}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));border:1px solid var(--rule);background:var(--sheet);border-radius:var(--r)}
+.kpi{padding:14px 16px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .val{font-family:var(--f-display);font-weight:700;font-stretch:85%;font-size:1.45rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi .sub{font-size:.78rem;color:var(--ink-2)}
+.kpi.primary .val{color:var(--accent)}
+
+.btn{appearance:none;border:1px solid var(--rule-strong);background:var(--sheet);color:var(--ink);font:600 .84rem var(--f-body);padding:7px 12px;border-radius:var(--r);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--ink)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.danger.armed{background:var(--bad);color:var(--sheet)}
+.btn.small{padding:3px 8px;font-size:.78rem}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--sheet);border:1px solid var(--rule-strong);border-radius:var(--r);padding:7px 9px;width:100%;min-width:0}
+textarea{min-height:84px;resize:vertical}
+.filters{display:flex;flex-wrap:wrap;gap:8px}.filters>*{width:auto;flex:1 1 160px}
+
+.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:var(--r);background:var(--sheet)}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+th{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);text-align:left;font-weight:600;padding:9px 10px;border-bottom:1.5px solid var(--rule-strong);white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+tr[data-edit]{cursor:pointer} tr[data-edit]:hover td{background:var(--accent-soft)}
+td.num,th.num{text-align:right;white-space:nowrap}
+tfoot td{font-weight:600;border-top:1.5px solid var(--rule-strong);border-bottom:none}
+.cw{max-width:44ch}
+.empty{padding:28px 16px;text-align:center;color:var(--ink-2);display:grid;gap:10px;justify-items:center}
+.empty strong{color:var(--ink);font-family:var(--f-display);font-size:1.05rem}
+
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:.74rem;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.p-ok{background:var(--ok-soft);color:var(--ok)} .p-warn{background:var(--warn-soft);color:var(--warn)} .p-bad{background:var(--bad-soft);color:var(--bad)}
+.p-info{background:var(--info-soft);color:var(--info)} .p-mute{border-color:var(--rule-strong);color:var(--ink-2)}
+.bar{height:8px;background:var(--rule);border-radius:4px;overflow:hidden;min-width:70px}
+.bar>i{display:block;height:100%;background:var(--accent)}
+
+.alert{display:grid;grid-template-columns:6px minmax(0,1fr);gap:10px;padding:9px 0;border-bottom:1px solid var(--rule)}
+.alert:last-child{border-bottom:none}
+.alert .sev{border-radius:3px}
+.alert.bad .sev{background:var(--bad)} .alert.warn .sev{background:var(--warn)} .alert.info .sev{background:var(--info)} .alert.ok .sev{background:var(--ok)}
+
+/* Checklist */
+.fase{display:grid}
+.fase>h3{padding:12px 0 6px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.fasepct{display:inline-flex;align-items:center;gap:8px;font:500 .8rem var(--f-mono)}.fasepct .bar{width:120px}
+.passo{display:grid;grid-template-columns:28px 40px minmax(0,1fr) 160px;gap:10px;padding:10px 0;border-bottom:1px solid var(--rule);align-items:start}
+.passo input[type=checkbox]{width:18px;height:18px;margin-top:2px;accent-color:var(--accent)}
+.passo .n{font-family:var(--f-mono);color:var(--ink-3);font-size:.8rem;padding-top:2px}
+.passo .t{font-weight:600;cursor:pointer}
+.passo .d{color:var(--ink-2);font-size:.85rem;margin-top:2px;white-space:pre-line}
+.passo .meta{font-size:.76rem;color:var(--ink-3);margin-top:4px;display:flex;flex-wrap:wrap;gap:4px 12px}
+.passo.done .t{text-decoration:line-through;text-decoration-color:var(--ink-3);color:var(--ink-2)}
+.passo.na{opacity:.55}
+@media (max-width:640px){.passo{grid-template-columns:24px minmax(0,1fr)}.passo .n{display:none}.passo select{grid-column:2}}
+
+/* Ferramentas */
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.tool{background:var(--sheet);border:1px solid var(--rule);border-radius:var(--r);padding:14px;display:grid;gap:8px;align-content:start}
+.tool h3{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.tool ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:.86rem}
+.refs ul{margin:6px 0 0;padding-left:18px;display:grid;gap:5px}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 45%,transparent);z-index:20;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
+.modal{background:var(--sheet);border:1.5px solid var(--ink);border-radius:var(--r);width:min(760px,100%);margin-top:4vh}
+.modal header{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--rule-strong)}
+.modal form{padding:16px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.modal .full{grid-column:1/-1}
+.modal label{display:grid;gap:4px;font-size:.8rem;font-weight:600;color:var(--ink-2);min-width:0}
+.modal label .req{color:var(--bad)}
+.modal footer{grid-column:1/-1;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid var(--rule);padding-top:12px}
+.modal .err{grid-column:1/-1;color:var(--bad);font-size:.85rem}
+.files{display:flex;flex-wrap:wrap;gap:6px;font-size:.8rem;align-items:center}
+.chip{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--rule-strong);border-radius:999px;padding:1px 8px;background:var(--sheet)}
+@media (max-width:560px){.modal form{grid-template-columns:minmax(0,1fr)}}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 14px;border-radius:var(--r);font-size:.86rem;z-index:30}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="ficha" id="ficha" aria-label="Dados do condomínio"></header>
+  <div id="banner" class="banner" hidden></div>
+  <div id="modo" class="modo" hidden></div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Seções"></nav>
+  <main id="main"></main>
+</div>
+<div id="overlay" class="overlay" hidden></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(() => {
+"use strict";
+
+const CATS = ["Taxa condominial","Taxa extra / rateio","Fundo de reserva","Constituição (cartório, CNPJ, taxas)","Honorários (contador, advogado)","Manutenção / áreas comuns","Água / energia comum","Segurança / portaria","Seguro","Tarifas bancárias","Outros"];
+const ST_CHECK = ["Pendente","Em andamento","Concluído","Não se aplica"];
+const SCHEMAS = {
+  checklist:{nome:"item do checklist",fields:[
+    {k:"ordem",l:"Nº",t:"number",req:1},{k:"fase",l:"Fase",t:"text",req:1,dl:"fases"},
+    {k:"item",l:"Item",t:"text",req:1,full:1},{k:"detalhe",l:"O que fazer",t:"textarea",full:1},
+    {k:"quem",l:"Quem",t:"text"},{k:"prazo",l:"Prazo",t:"date"},
+    {k:"base",l:"Base legal / referência",t:"text",full:1},
+    {k:"status",l:"Situação",t:"select",opts:ST_CHECK,def:"Pendente"},{k:"concluidoEm",l:"Concluído em",t:"date"},
+    {k:"arquivos",l:"Documentos",t:"files",full:1},{k:"obs",l:"Observações",t:"textarea",full:1}]},
+  unidades:{nome:"unidade",fields:[
+    {k:"unidade",l:"Unidade",t:"text",req:1},{k:"fracao",l:"Fração ideal",t:"number"},
+    {k:"proprietario",l:"Proprietário(s)",t:"text",full:1},{k:"cpf",l:"CPF / CNPJ",t:"text"},{k:"matricula",l:"Matrícula",t:"text"},
+    {k:"telefone",l:"Telefone",t:"text"},{k:"email",l:"E-mail",t:"text"},
+    {k:"situacao",l:"Situação da unidade",t:"select",opts:["Terreno","Em obra","Construída/habitada"]},{k:"cargo",l:"Cargo no condomínio",t:"text"},
+    {k:"areaPrivativa",l:"Área privativa (m²)",t:"number"},{k:"areaComum",l:"Área comum vinculada (m²)",t:"number"},
+    {k:"areaOcupacao",l:"Projeção ocupada (m²)",t:"number"},{k:"areaConstruida",l:"Área construída total (m²)",t:"number"},
+    {k:"projetoStatus",l:"Projeto",t:"select",opts:["Sem projeto","Estudo preliminar","Projeto em aprovação","Aprovado / alvará","Em obra","Habite-se"]},
+    {k:"arquiteto",l:"Arquiteto / escritório",t:"text"},{k:"alvara",l:"Alvará / processo",t:"text",full:1},
+    {k:"confrontacoes",l:"Posição e divisas",t:"textarea",full:1},
+    {k:"projetos",l:"Projetos, plantas e alvarás",t:"files",full:1},
+    {k:"obs",l:"Observações",t:"textarea",full:1}]},
+  financeiro:{nome:"lançamento",fields:[
+    {k:"data",l:"Data / competência",t:"date",req:1},{k:"tipo",l:"Tipo",t:"select",opts:["Receita","Despesa"],req:1,def:"Despesa"},
+    {k:"descricao",l:"Descrição",t:"text",req:1,full:1},
+    {k:"categoria",l:"Categoria",t:"select",opts:CATS},
+    {k:"unidade",l:"Unidade (se cobrança)",t:"text",dl:"unidades"},
+    {k:"valor",l:"Valor (R$)",t:"money",req:1},{k:"status",l:"Situação",t:"select",opts:["Pago/recebido","Previsto","Em atraso"],def:"Previsto"},
+    {k:"vencimento",l:"Vencimento",t:"date"},{k:"pagoPor",l:"Quem pagou/adiantou",t:"text"},
+    {k:"arquivos",l:"Comprovantes",t:"files",full:1},{k:"obs",l:"Observações",t:"textarea",full:1}]},
+  assembleias:{nome:"assembleia",fields:[
+    {k:"data",l:"Data",t:"date",req:1},{k:"tipo",l:"Tipo",t:"select",opts:["Constituição/instalação","AGO (ordinária)","AGE (extraordinária)","Reunião informal"],req:1},
+    {k:"status",l:"Situação",t:"select",opts:["Planejada","Convocada","Realizada","Ata assinada","Ata registrada"],def:"Planejada"},
+    {k:"local",l:"Local / meio",t:"text"},
+    {k:"pauta",l:"Ordem do dia",t:"textarea",full:1},{k:"presentes",l:"Presentes / representados",t:"textarea",full:1},
+    {k:"deliberacoes",l:"Deliberações",t:"textarea",full:1},
+    {k:"registro",l:"Registro (cartório, nº, data)",t:"text",full:1},{k:"arquivos",l:"Edital, ata, lista de presença, gravação",t:"files",full:1}]},
+  documentos:{nome:"documento",fields:[
+    {k:"nome",l:"Documento",t:"text",req:1,full:1},
+    {k:"tipo",l:"Tipo",t:"select",opts:["Instituição/matrícula","Convenção","Regimento interno","Ata","Edital de convocação","Procuração","CNPJ","Conta bancária","Contrato","Seguro","Certidão","Planta / projeto","Comprovante","Outro"]},
+    {k:"data",l:"Data",t:"date"},{k:"validade",l:"Validade",t:"date"},
+    {k:"registro",l:"Registro / protocolo",t:"text",full:1},{k:"arquivos",l:"Arquivo",t:"files",full:1},{k:"obs",l:"Observações",t:"textarea",full:1}]},
+  demandas:{nome:"demanda",fields:[
+    {k:"titulo",l:"Demanda",t:"text",req:1,full:1},{k:"data",l:"Aberta em",t:"date",def:"today"},
+    {k:"unidade",l:"Unidade / solicitante",t:"text",dl:"unidades"},
+    {k:"tipo",l:"Tipo",t:"select",opts:["Obra (aviso/autorização)","Manutenção","Segurança","Infraestrutura (água, luz, esgoto, acesso)","Convivência","Administrativo","Outro"]},
+    {k:"prioridade",l:"Prioridade",t:"select",opts:["Alta","Média","Baixa"],def:"Média"},
+    {k:"responsavel",l:"Responsável",t:"text"},{k:"prazo",l:"Prazo",t:"date"},
+    {k:"status",l:"Situação",t:"select",opts:["Aberta","Em andamento","Resolvida"],def:"Aberta"},
+    {k:"descricao",l:"Descrição",t:"textarea",full:1},{k:"arquivos",l:"Fotos / anexos",t:"files",full:1}]},
+  contratos:{nome:"contrato ou fornecedor",fields:[
+    {k:"nome",l:"Fornecedor",t:"text",req:1},{k:"servico",l:"Serviço",t:"text",req:1},
+    {k:"valor",l:"Valor (R$)",t:"money"},{k:"periodicidade",l:"Periodicidade",t:"select",opts:["Mensal","Anual","Avulso"]},
+    {k:"inicio",l:"Início",t:"date"},{k:"fim",l:"Fim / renovação",t:"date"},
+    {k:"status",l:"Situação",t:"select",opts:["Cotação","Ativo","Encerrado"],def:"Cotação"},{k:"contato",l:"Contato",t:"text"},
+    {k:"arquivos",l:"Proposta / contrato",t:"files",full:1},{k:"obs",l:"Observações",t:"textarea",full:1}]},
+  contas:{nome:"conta fixa mensal",fields:[
+    {k:"descricao",l:"Conta",t:"text",req:1,full:1},{k:"tipo",l:"Tipo",t:"select",opts:["Receita","Despesa"],req:1,def:"Despesa"},
+    {k:"categoria",l:"Categoria",t:"select",opts:CATS},{k:"unidade",l:"Unidade (taxa condominial)",t:"text",dl:"unidades"},
+    {k:"modo",l:"Como calcular o valor",t:"select",opts:["Valor fixo","Rateio pela fração ideal"],def:"Valor fixo"},
+    {k:"valor",l:"Valor mensal (R$) — se fixo",t:"money"},{k:"diaVenc",l:"Dia de vencimento",t:"number"},
+    {k:"ativa",l:"Ativa",t:"select",opts:["Sim","Não"],def:"Sim"},{k:"fornecedor",l:"Fornecedor / nº de instalação",t:"text"},
+    {k:"obs",l:"Observações",t:"textarea",full:1}]},
+  agenda:{nome:"obrigação recorrente",fields:[
+    {k:"obrigacao",l:"Obrigação",t:"text",req:1,full:1},{k:"periodicidade",l:"Periodicidade",t:"select",opts:["Mensal","Anual","A cada 2 anos","Eventual"]},
+    {k:"proximo",l:"Próximo vencimento",t:"date"},{k:"quem",l:"Quem",t:"text"},
+    {k:"base",l:"Base legal",t:"text",full:1},{k:"status",l:"Situação",t:"select",opts:["Ativa","Confirmar com contador","Não se aplica"],def:"Ativa"},
+    {k:"obs",l:"Observações",t:"textarea",full:1}]}
+};
+const COLS = Object.keys(SCHEMAS);
+const LOGO="data:image/webp;base64,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";
+const TABS = [["painel","Painel"],["checklist","Checklist de constituição"],["assembleias","Assembleias e atas"],["unidades","Lotes e unidades"],["financeiro","Financeiro"],["dre","DRE"],["demandas","Demandas"],["documentos","Documentos"],["contratos","Contratos"],["agenda","Obrigações"],["ferramentas","Ferramentas"],["config","Dados do condomínio"]];
+
+const S = {config:{}, canWrite:true, assets:null};
+COLS.forEach(c=>S[c]=[]);
+let db=null, tab="painel";
+try{ const t=localStorage.getItem("cond.tab"); if(t && TABS.some(x=>x[0]===t)) tab=t; }catch(e){}
+
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const BRL=new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
+const fmtR=v=>(v==null||!isFinite(v))?"—":BRL.format(v);
+const fmtD=iso=>iso?String(iso).slice(0,10).split("-").reverse().join("/"):"—";
+const num=v=>{const n=typeof v==="number"?v:parseFloat(v);return isFinite(n)?n:0;};
+function parseMoney(s){ if(typeof s==="number") return s; s=String(s??"").trim().replace(/[R$\s]/g,""); if(!s) return null;
+  const neg=s.startsWith("-"); s=s.replace(/-/g,""); if(s.includes(",")) s=s.replace(/\./g,"").replace(",","."); else if((s.match(/\./g)||[]).length>1) s=s.replace(/\./g,"");
+  const n=parseFloat(s); return isFinite(n)?(neg?-n:n):null; }
+const pad=n=>String(n).padStart(2,"0");
+const now=new Date(); const TODAY=now.getFullYear()+"-"+pad(now.getMonth()+1)+"-"+pad(now.getDate());
+const days=(a,b)=>Math.round((new Date(b+"T12:00")-new Date(a+"T12:00"))/864e5);
+const sortBy=(a,k,d=1)=>a.slice().sort((x,y)=>{const p=x[k]??"",q=y[k]??"";return p>q?d:p<q?-d:0;});
+function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600);}
+function pill(t){const m={"Concluído":"p-ok","Pago/recebido":"p-ok","Resolvida":"p-ok","Ativo":"p-ok","Ativa":"p-ok","Realizada":"p-info","Ata assinada":"p-info","Ata registrada":"p-ok",
+  "Em andamento":"p-info","Convocada":"p-info","Pendente":"p-mute","Planejada":"p-mute","Previsto":"p-warn","Cotação":"p-warn","Aberta":"p-warn","Em atraso":"p-bad","Alta":"p-bad","Média":"p-warn","Baixa":"p-mute",
+  "Não se aplica":"p-mute","Encerrado":"p-mute","Confirmar com contador":"p-warn","Vencido":"p-bad"}; return t?`<span class="pill ${m[t]||"p-mute"}">${esc(t)}</span>`:"";}
+const fileLinks=v=>(Array.isArray(v)?v:v?[v]:[]).map((f,i)=>`<a href="${esc(f.url||("/_blob/"+f.id))}" target="_blank" rel="noopener">${esc(f.name||("arquivo "+(i+1)))}</a>`).join(" · ");
+const addBtn=(c,l)=>S.canWrite?`<button class="btn pri" data-new="${c}">+ ${l}</button>`:"";
+const kpi=(l,v,s,c="")=>`<div class="kpi ${c}"><span class="lbl">${l}</span><span class="val">${v}</span>${s?`<span class="sub">${s}</span>`:""}</div>`;
+const emptyState=(t,x,c,l)=>`<div class="empty"><strong>${t}</strong><p>${x}</p>${c?addBtn(c,l):""}</div>`;
+
+/* ---------- cálculos ---------- */
+function calc(){
+  const C={};
+  const ck=S.checklist.filter(x=>x.status!=="Não se aplica");
+  C.ckTot=ck.length; C.ckOk=ck.filter(x=>x.status==="Concluído").length;
+  C.ckPct=C.ckTot?C.ckOk/C.ckTot:0;
+  C.prox=sortBy(S.checklist.filter(x=>!["Concluído","Não se aplica"].includes(x.status)),"ordem").slice(0,6);
+  let rec=0,desp=0,prevR=0,prevD=0,atraso=0;
+  S.financeiro.forEach(l=>{const v=num(l.valor); const pago=l.status==="Pago/recebido";
+    if(l.tipo==="Receita"){ if(pago) rec+=v; else prevR+=v; if(l.status==="Em atraso"||(!pago&&l.vencimento&&l.vencimento<TODAY)) atraso+=v; }
+    else { if(pago) desp+=v; else prevD+=v; }});
+  Object.assign(C,{rec,desp,saldo:rec-desp,prevR,prevD,atraso});
+  C.demAbertas=S.demandas.filter(d=>d.status!=="Resolvida");
+  C.fracTot=S.unidades.reduce((s,u)=>s+num(u.fracao),0);
+  return C;
+}
+function alertas(C){
+  const A=[];
+  S.checklist.filter(x=>x.prazo&&x.prazo<TODAY&&!["Concluído","Não se aplica"].includes(x.status)).forEach(x=>A.push(["bad",`Checklist atrasado: ${x.item} (prazo ${fmtD(x.prazo)})`,"checklist"]));
+  S.checklist.filter(x=>x.prazo&&x.prazo>=TODAY&&days(TODAY,x.prazo)<=7&&!["Concluído","Não se aplica"].includes(x.status)).forEach(x=>A.push(["warn",`Vence em ${days(TODAY,x.prazo)} dia(s): ${x.item}`,"checklist"]));
+  S.financeiro.filter(l=>l.status!=="Pago/recebido"&&l.vencimento&&l.vencimento<TODAY).forEach(l=>A.push(["bad",`${l.tipo==="Receita"?"Recebimento":"Pagamento"} vencido: ${l.descricao} — ${fmtR(num(l.valor))}`,"financeiro"]));
+  S.agenda.filter(a=>a.proximo&&a.status!=="Não se aplica"&&days(TODAY,a.proximo)<=15).forEach(a=>A.push([a.proximo<TODAY?"bad":"warn",`Obrigação: ${a.obrigacao} — ${fmtD(a.proximo)}`,"agenda"]));
+  S.documentos.filter(d=>d.validade&&days(TODAY,d.validade)<=30).forEach(d=>A.push([d.validade<TODAY?"bad":"warn",`${d.nome}: validade ${fmtD(d.validade)}`,"documentos"]));
+  const alta=C.demAbertas.filter(d=>d.prioridade==="Alta"); if(alta.length) A.push(["warn",`${alta.length} demanda(s) de prioridade alta em aberto`,"demandas"]);
+  S.contratos.filter(c=>c.status==="Ativo"&&c.fim&&days(TODAY,c.fim)<=30).forEach(c=>A.push(["warn",`Contrato ${c.nome} (${c.servico}) vence em ${fmtD(c.fim)}`,"contratos"]));
+  const m=S.config.mandatoFim; if(m&&days(TODAY,m)<=60) A.push([m<TODAY?"bad":"warn",`Mandato da administração termina em ${fmtD(m)} — convocar assembleia de eleição`,"assembleias"]);
+  return A;
+}
+
+/* ---------- render ---------- */
+function renderFicha(){
+  const c=S.config, cell=(l,v)=>`<div><div class="lbl">${l}</div><div class="v">${v?esc(v):'<span class="muted">—</span>'}</div></div>`;
+  $("#ficha").innerHTML=`<div class="titulo"><div class="marca"><img src="${LOGO}" alt="Brasão do Jardim das Orquídeas"><div><div class="lbl">Condomínio</div><h1>${esc(c.nome||"Residencial Jardim das Orquídeas")}</h1></div></div><p class="muted small">${esc(c.endereco||"SHI/Sul QI 25, Chácara 05 — Lago Sul, Brasília/DF")}</p></div>
+  ${cell("CNPJ",c.cnpj||"a obter")}${cell("Síndico(a)",c.sindico)}${cell("Subsíndico(a)",c.subsindico)}${cell("Mandato",c.mandatoInicio?fmtD(c.mandatoInicio)+" a "+fmtD(c.mandatoFim):"")}
+  ${cell("Convenção",c.convencao)}${cell("Taxa mensal",c.taxaMensal?fmtR(num(c.taxaMensal)):"")}${cell("Conta bancária",c.banco)}${cell("Unidades",S.unidades.length?String(S.unidades.length):"")}`;
+}
+function renderTabs(){ $("#tabs").innerHTML=TABS.map(([k,l])=>`<button role="tab" id="t-${k}" aria-selected="${k===tab}" data-tab="${k}">${l}</button>`).join(""); }
+function render(){ renderFicha(); renderTabs(); const C=calc(); $("#main").innerHTML=`<section class="tab" role="tabpanel" aria-labelledby="t-${tab}">${(VIEWS[tab]||VIEWS.painel)(C)}</section>`; }
+let rq=0; function schedule(){ if(rq) return; rq=requestAnimationFrame(()=>{rq=0; if(!$("#overlay").hidden){renderFicha();return;} render();}); }
+
+const VIEWS={};
+VIEWS.painel=C=>{
+  const A=alertas(C);
+  return `<div class="head"><div><h2>Painel</h2><p class="desc">Situação da constituição do condomínio, caixa e pendências. Os alertas vêm dos prazos do checklist, do financeiro, das obrigações e dos documentos.</p></div><div class="btns">${addBtn("demandas","Demanda")}${addBtn("financeiro","Lançamento")}</div></div>
+  <div class="kpis">
+    ${kpi("Constituição",Math.round(C.ckPct*100)+"%",`${C.ckOk} de ${C.ckTot} itens concluídos`,"primary")}
+    ${kpi("Saldo em caixa",fmtR(C.saldo),`Recebido ${fmtR(C.rec)} · pago ${fmtR(C.desp)}`)}
+    ${kpi("A receber",fmtR(C.prevR),C.atraso?`<span style="color:var(--bad)">${fmtR(C.atraso)} em atraso</span>`:"sem atrasos")}
+    ${kpi("A pagar",fmtR(C.prevD),"despesas previstas")}
+    ${kpi("Demandas abertas",String(C.demAbertas.length),`${C.demAbertas.filter(d=>d.prioridade==="Alta").length} de prioridade alta`)}
+  </div>
+  <div class="g2">
+    <div class="panel"><h3>Alertas</h3><div style="margin-top:8px">${A.length?A.map(([s,t,g])=>`<div class="alert ${s}"><span class="sev"></span><div>${esc(t)} <button class="btn small" data-go="${g}">abrir</button></div></div>`).join(""):'<p class="muted small">Nenhum alerta no momento.</p>'}</div></div>
+    <div class="panel"><h3>Próximos passos da constituição</h3><div style="margin-top:8px">${C.prox.length?C.prox.map(x=>`<div class="alert ${x.prazo&&x.prazo<TODAY?"bad":"info"}"><span class="sev"></span><div><strong>${esc(x.ordem)}. ${esc(x.item)}</strong><div class="small muted">${esc(x.fase)}${x.quem?" · "+esc(x.quem):""}${x.prazo?" · prazo "+fmtD(x.prazo):""}</div></div></div>`).join(""):'<p class="muted small">Checklist vazio ou concluído.</p>'}<div style="margin-top:10px"><button class="btn" data-go="checklist">Ver checklist completo</button></div></div></div>
+  </div>`;
+};
+
+VIEWS.checklist=C=>{
+  const fases=[]; sortBy(S.checklist,"ordem").forEach(x=>{let f=fases.find(y=>y.n===x.fase); if(!f){f={n:x.fase,itens:[]};fases.push(f);} f.itens.push(x);});
+  return `<div class="head"><div><h2>Checklist de constituição</h2><p class="desc">Do registro da ata ao CNPJ, conta bancária e rotina de gestão. Marque a caixa para concluir; clique no título para editar prazo, responsável, observações e anexar documentos. Itens com base legal citam a norma; os marcados "confirmar" dependem do cartório, do contador ou da convenção.</p></div><div class="btns">${addBtn("checklist","Item")}</div></div>
+  <div class="kpis">${kpi("Concluídos",C.ckOk+" / "+C.ckTot,"","primary")}${kpi("Em andamento",String(S.checklist.filter(x=>x.status==="Em andamento").length))}${kpi("Atrasados",String(S.checklist.filter(x=>x.prazo&&x.prazo<TODAY&&!["Concluído","Não se aplica"].includes(x.status)).length))}</div>
+  <div class="panel">${fases.length?fases.map(f=>{const v=f.itens.filter(x=>x.status!=="Não se aplica"),ok=v.filter(x=>x.status==="Concluído").length,p=v.length?ok/v.length:0;
+    return `<div class="fase"><h3><span>${esc(f.n)}</span><span class="fasepct"><span class="bar"><i style="width:${p*100}%"></i></span>${ok}/${v.length}</span></h3>${f.itens.map(x=>{const done=x.status==="Concluído",late=x.prazo&&x.prazo<TODAY&&!done&&x.status!=="Não se aplica";
+      return `<div class="passo ${done?"done":""} ${x.status==="Não se aplica"?"na":""}"><input type="checkbox" aria-label="Concluir ${esc(x.item)}" data-check="${x.id}" ${done?"checked":""} ${S.canWrite?"":"disabled"}><span class="n">${esc(x.ordem)}</span>
+      <div><div class="t" data-edit="checklist" data-id="${x.id}" role="button" tabindex="0">${esc(x.item)}</div>${x.detalhe?`<div class="d">${esc(x.detalhe)}</div>`:""}
+      <div class="meta">${x.quem?`<span>Quem: ${esc(x.quem)}</span>`:""}${x.prazo?`<span style="${late?"color:var(--bad);font-weight:600":""}">Prazo: ${fmtD(x.prazo)}</span>`:""}${x.base?`<span>Base: ${esc(x.base)}</span>`:""}${x.concluidoEm?`<span>Concluído em ${fmtD(x.concluidoEm)}</span>`:""}${x.arquivos&&x.arquivos.length?`<span>${fileLinks(x.arquivos)}</span>`:""}</div>${x.obs?`<div class="d" style="margin-top:4px"><em>${esc(x.obs)}</em></div>`:""}</div>
+      <select aria-label="Situação" data-status="${x.id}" ${S.canWrite?"":"disabled"}>${ST_CHECK.map(s=>`<option ${s===x.status?"selected":""}>${s}</option>`).join("")}</select></div>`;}).join("")}</div>`;}).join(""):emptyState("Checklist vazio","Os itens aparecem aqui depois de carregados.","checklist","Item")}</div>`;
+};
+
+function table(col,cols,rows,foot=""){
+  if(!rows.length) return `<div class="panel">${emptyState("Nada registrado","Use o botão acima para incluir o primeiro registro.",col,"Adicionar")}</div>`;
+  return `<div class="tw"><table><thead><tr>${cols.map(c=>`<th class="${c.num?"num":""}">${c.h}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr data-edit="${col}" data-id="${r.id}" tabindex="0">${cols.map(c=>`<td class="${c.num?"num":""} ${c.wrap?"cw":""}">${c.f(r)}</td>`).join("")}</tr>`).join("")}</tbody>${foot}</table></div>`;
+}
+
+VIEWS.assembleias=()=>`<div class="head"><div><h2>Assembleias e atas</h2><p class="desc">Cada assembleia com pauta, presentes, deliberações e arquivos (edital, lista de presença, ata assinada, comprovante de registro). A ata que elege o síndico precisa ser registrada no Registro de Títulos e Documentos para o CNPJ.</p></div><div class="btns">${addBtn("assembleias","Assembleia")}</div></div>
+  ${table("assembleias",[{h:"Data",f:r=>fmtD(r.data)},{h:"Tipo",f:r=>esc(r.tipo)},{h:"Situação",f:r=>pill(r.status)},{h:"Deliberações",wrap:1,f:r=>esc((r.deliberacoes||"").slice(0,220))+((r.deliberacoes||"").length>220?"…":"")},{h:"Registro",f:r=>esc(r.registro)},{h:"Arquivos",f:r=>fileLinks(r.arquivos)}],sortBy(S.assembleias,"data",-1))}`;
+
+VIEWS.unidades=C=>{
+  const U=sortBy(S.unidades,"unidade"), m2=v=>(v||v===0)&&v!==""?num(v).toLocaleString("pt-BR",{maximumFractionDigits:2})+" m²":"—";
+  const priv=U.reduce((a,r)=>a+num(r.areaPrivativa),0), ocup=U.reduce((a,r)=>a+num(r.areaOcupacao),0), constr=U.reduce((a,r)=>a+num(r.areaConstruida),0);
+  const lim=parseMoney(S.config.limiteOcupacao)||0, gleba=parseMoney(S.config.areaGleba)||0;
+  const mapa=S.config.mapa, pdf=S.config.mapaPdf;
+  return `<div class="head"><div><h2>Lotes e unidades</h2><p class="desc">Planta do condomínio, áreas de cada unidade e o que cada uma já construiu ou projetou. Anexe aqui os projetos de cada lote para acompanhar a ocupação total e harmonizar recuos, muros e fachadas. A fração ideal define o peso do voto (CC art. 1.352, parágrafo único, salvo regra diversa na convenção).</p></div><div class="btns">${addBtn("unidades","Unidade")}</div></div>
+  <div class="panel mapa">${mapa?`<a href="${esc(pdf&&pdf.url||mapa.url)}" target="_blank" rel="noopener"><img src="${esc(mapa.url)}" alt="Plano de ocupação do condomínio com as unidades A, B, C e D"></a><p class="small muted">${esc(S.config.mapaLegenda||"")}${pdf?` · <a href="${esc(pdf.url)}" target="_blank" rel="noopener">abrir o PDF</a>`:""}</p>`:'<p class="muted">Nenhuma planta do condomínio anexada.</p>'}
+    ${S.canWrite&&S.assets?`<label class="btn small" style="margin-top:8px">Trocar imagem da planta<input type="file" accept="image/*" data-mapa hidden></label>`:""}</div>
+  <div class="kpis">${kpi("Gleba",gleba?m2(gleba):"—","","primary")}${kpi("Área privativa somada",m2(priv),gleba?`área comum ${m2(gleba-priv)}`:"")}
+    ${kpi("Projeção ocupada somada",m2(ocup),lim?`limite ${m2(lim)} · ${Math.round(ocup/lim*100)}% usado`:"informe o limite em Dados")}${kpi("Área construída somada",m2(constr),"pelo que foi lançado")}</div>
+  ${table("unidades",[{h:"Unidade",f:r=>`<strong>${esc(r.unidade)}</strong>`},{h:"Proprietário(s)",wrap:1,f:r=>esc(r.proprietario)},{h:"Área privativa",num:1,f:r=>m2(r.areaPrivativa)},{h:"Fração",num:1,f:r=>r.fracao?num(r.fracao).toLocaleString("pt-BR",{maximumFractionDigits:4}):"—"},
+    {h:"Projeção",num:1,f:r=>r.areaOcupacao?m2(r.areaOcupacao)+(r.areaPrivativa?` <span class="muted small">(${Math.round(num(r.areaOcupacao)/num(r.areaPrivativa)*100)}%)</span>`:""):"—"},{h:"Construída",num:1,f:r=>m2(r.areaConstruida)},
+    {h:"Projeto",f:r=>pill(r.projetoStatus)},{h:"Situação",f:r=>esc(r.situacao)},{h:"Cargo",f:r=>esc(r.cargo)},{h:"Arquivos",wrap:1,f:r=>fileLinks(r.projetos)}],U,
+  U.length?`<tfoot><tr><td>Total</td><td></td><td class="num">${m2(priv)}</td><td class="num">${C.fracTot.toLocaleString("pt-BR",{maximumFractionDigits:4})}</td><td class="num">${m2(ocup)}</td><td class="num">${m2(constr)}</td><td colspan="4"></td></tr></tfoot>`:"")}`;
+};
+
+/* ---------- contas fixas e DRE ---------- */
+let mesRef=TODAY.slice(0,7), anoDRE=TODAY.slice(0,4), modoDRE="real";
+const ymLabel=ym=>{const [y,m]=ym.split("-");return m+"/"+y;};
+const MESES=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+function despFixas(){ return S.contas.filter(c=>c.ativa!=="Não"&&c.tipo==="Despesa"&&c.modo!=="Rateio pela fração ideal").reduce((s,c)=>s+num(c.valor),0); }
+function fracUnid(u){ const r=S.unidades.find(x=>String(x.unidade).trim().toUpperCase()===String(u||"").trim().toUpperCase()); if(!r) return {f:null,orig:"unidade não cadastrada"};
+  if(r.fracao) return {f:num(r.fracao),orig:"pela fração ideal"};
+  const tot=S.unidades.reduce((s,x)=>s+num(x.areaPrivativa),0); return r.areaPrivativa&&tot?{f:num(r.areaPrivativa)/tot,orig:"pela área privativa (fração não confirmada)"}:{f:null,orig:"sem fração cadastrada"}; }
+function valorConta(c){ if(c.modo==="Rateio pela fração ideal"){ const base=parseMoney(S.config.taxaMensal)||despFixas(); const fu=fracUnid(c.unidade);
+    return {v:fu.f!=null&&base?Math.round(base*fu.f*100)/100:null,nota:fu.f!=null?`${(fu.f*100).toLocaleString("pt-BR",{maximumFractionDigits:2})}% de ${fmtR(base)} · ${fu.orig}`:fu.orig}; }
+  const vazio=c.valor==null||c.valor==="";
+  return {v:vazio?null:num(c.valor),nota:vazio?"valor a definir":""}; }
+const lancId=(ym,cid)=>"m"+ym.replace("-","")+"_"+cid;
+const compet=l=>(l.competencia||l.data||"").slice(0,7);
+const ordContas=a=>a.slice().sort((x,y)=>(x.tipo===y.tipo?0:x.tipo==="Receita"?-1:1)||String(x.descricao).localeCompare(String(y.descricao),"pt-BR"));
+
+VIEWS.financeiro=C=>{
+  const rows=sortBy(S.financeiro,"data",-1), contas=ordContas(S.contas), ativas=contas.filter(c=>c.ativa!=="Não");
+  const mes=ativas.map(c=>({c,l:S.financeiro.find(x=>x.id===lancId(mesRef,c.id)),calc:valorConta(c)}));
+  const recM=mes.filter(x=>x.c.tipo==="Receita"), despM=mes.filter(x=>x.c.tipo==="Despesa");
+  const tot=a=>a.reduce((s,x)=>s+num(x.l?x.l.valor:x.calc.v),0), pago=a=>a.filter(x=>x.l&&x.l.status==="Pago/recebido").reduce((s,x)=>s+num(x.l.valor),0);
+  const faltam=mes.filter(x=>!x.l).length;
+  const linha=x=>{const st=x.l?(x.l.status!=="Pago/recebido"&&x.l.vencimento&&x.l.vencimento<TODAY?"Em atraso":x.l.status):"Não gerado";
+    const val=x.l?(x.l.valor==null?'<span class="muted">a definir</span>':fmtR(num(x.l.valor))):(x.calc.v==null?'<span class="muted">a definir</span>':fmtR(x.calc.v));
+    return `<tr><td>${esc(x.c.descricao)}${x.c.unidade?` <span class="muted small">· ${esc(x.c.unidade)}</span>`:""}</td>
+    <td>${x.l?fmtD(x.l.vencimento):(x.c.diaVenc?String(x.c.diaVenc).padStart(2,"0")+"/"+mesRef.slice(5,7):"—")}</td>
+    <td class="num">${val}${!x.l&&x.calc.nota?`<div class="small muted">${esc(x.calc.nota)}</div>`:""}</td>
+    <td>${st==="Não gerado"?'<span class="pill p-mute">Não gerado</span>':pill(st)}</td>
+    <td>${x.l&&S.canWrite?(x.l.status==="Pago/recebido"?`<button class="btn small" data-edit="financeiro" data-id="${x.l.id}">Ver</button>`:`<button class="btn small pri" data-pay="${x.l.id}">${x.c.tipo==="Receita"?"Recebido":"Pago"}</button> <button class="btn small" data-edit="financeiro" data-id="${x.l.id}">Editar</button>`):""}</td></tr>`;};
+  return `<div class="head"><div><h2>Financeiro</h2><p class="desc">Contas fixas (taxa de cada unidade, diarista, energia, CAESB), conferência do mês e todos os lançamentos. Enquanto não houver CNPJ e conta própria, registre quem adiantou cada despesa. Anexe os comprovantes: a prestação de contas (CC arts. 1.348, VIII, e 1.350) depende deles. Pela convenção, o rateio é pela fração ideal e o vencimento no dia 5 (arts. 21 e 23).</p></div><div class="btns">${addBtn("financeiro","Lançamento avulso")}</div></div>
+  <div class="kpis">${kpi("Saldo em caixa",fmtR(C.saldo),"tudo o que foi pago e recebido","primary")}${kpi("Recebido",fmtR(C.rec))}${kpi("Pago",fmtR(C.desp))}${kpi("A receber",fmtR(C.prevR))}${kpi("A pagar",fmtR(C.prevD))}</div>
+
+  <div class="panel" style="margin-top:16px"><div class="head" style="margin:0 0 10px"><div><h3 style="margin:0">Conferência do mês</h3><p class="desc small">Gere os lançamentos previstos das contas fixas e marque cada um ao pagar ou receber.</p></div>
+    <div class="btns"><input type="month" value="${mesRef}" data-mes aria-label="Mês de referência">${S.canWrite&&faltam?`<button class="btn pri" data-gerar>Gerar ${faltam} lançamento(s) de ${ymLabel(mesRef)}</button>`:""}</div></div>
+    ${ativas.length?`<div class="kpis" style="margin-bottom:12px">${kpi("Receitas do mês",fmtR(tot(recM)),"recebido "+fmtR(pago(recM)))}${kpi("Despesas do mês",fmtR(tot(despM)),"pago "+fmtR(pago(despM)))}${kpi("Resultado previsto",fmtR(tot(recM)-tot(despM)),"","primary")}</div>
+    <div class="tw"><table><thead><tr><th>Conta</th><th>Vencimento</th><th class="num">Valor</th><th>Situação</th><th></th></tr></thead><tbody>
+    ${recM.length?`<tr class="grp"><td colspan="5">Receitas</td></tr>${recM.map(linha).join("")}`:""}${despM.length?`<tr class="grp"><td colspan="5">Despesas</td></tr>${despM.map(linha).join("")}`:""}</tbody></table></div>`
+    :emptyState("Nenhuma conta fixa","Cadastre as contas que se repetem todo mês.","contas","Conta fixa")}</div>
+
+  <div class="head" style="margin-top:22px"><div><h3 style="margin:0">Contas fixas mensais</h3><p class="desc small">Base da conferência e da previsão. As taxas em "Rateio pela fração ideal" dividem a arrecadação mensal definida em Dados do condomínio ou, se ela estiver vazia, a soma das despesas fixas com valor.</p></div><div class="btns">${addBtn("contas","Conta fixa")}</div></div>
+  ${table("contas",[{h:"Conta",wrap:1,f:r=>esc(r.descricao)+(r.unidade?` <span class="muted small">· ${esc(r.unidade)}</span>`:"")},{h:"Tipo",f:r=>esc(r.tipo)},{h:"Categoria",f:r=>esc(r.categoria)},{h:"Cálculo",f:r=>esc(r.modo||"Valor fixo")},{h:"Dia",num:1,f:r=>esc(r.diaVenc??"—")},
+    {h:"Valor mensal",num:1,f:r=>{const x=valorConta(r);return (x.v==null?'<span class="muted">a definir</span>':fmtR(x.v))+(x.nota&&r.modo==="Rateio pela fração ideal"?`<div class="small muted">${esc(x.nota)}</div>`:"");}},{h:"Ativa",f:r=>esc(r.ativa||"Sim")}],contas)}
+
+  <div class="head" style="margin-top:22px"><div><h3 style="margin:0">Todos os lançamentos</h3></div></div>
+  ${table("financeiro",[{h:"Competência",f:r=>compet(r)?ymLabel(compet(r)):"—"},{h:"Tipo",f:r=>esc(r.tipo)},{h:"Descrição",wrap:1,f:r=>esc(r.descricao)+(r.unidade?` <span class="muted small">· ${esc(r.unidade)}</span>`:"")},{h:"Categoria",f:r=>esc(r.categoria)},{h:"Vencimento",f:r=>fmtD(r.vencimento)},{h:"Situação",f:r=>pill(r.status!=="Pago/recebido"&&r.vencimento&&r.vencimento<TODAY?"Em atraso":r.status)},{h:"Valor",num:1,f:r=>r.valor==null?'<span class="muted">a definir</span>':`<span style="color:${r.tipo==="Receita"?"var(--ok)":"var(--ink)"}">${r.tipo==="Despesa"?"−":""}${fmtR(num(r.valor))}</span>`},{h:"Comprov.",f:r=>fileLinks(r.arquivos)}],rows)}`;
+};
+
+VIEWS.dre=C=>{
+  const anos=[...new Set([TODAY.slice(0,4),...S.financeiro.map(l=>compet(l).slice(0,4)).filter(Boolean)])].sort();
+  const L=S.financeiro.filter(l=>compet(l).startsWith(anoDRE)&&(modoDRE==="real"?l.status==="Pago/recebido":true)&&l.valor!=null);
+  const M=[...Array(12)].map((_,i)=>anoDRE+"-"+String(i+1).padStart(2,"0"));
+  const grupo=t=>[...new Set(L.filter(l=>l.tipo===t).map(l=>l.categoria||"Outros"))].sort().map(c=>({c,v:M.map(m=>L.filter(l=>l.tipo===t&&(l.categoria||"Outros")===c&&compet(l)===m).reduce((s,l)=>s+num(l.valor),0))}));
+  const R=grupo("Receita"), D=grupo("Despesa");
+  const soma=g=>M.map((_,i)=>g.reduce((s,x)=>s+x.v[i],0)); const tR=soma(R), tD=soma(D), res=M.map((_,i)=>tR[i]-tD[i]);
+  let ac=0; const acum=res.map(v=>ac+=v); const T=a=>a.reduce((s,v)=>s+v,0);
+  const cel=v=>`<td class="num">${v?fmtR(v):'<span class="muted">—</span>'}</td>`;
+  const row=(lab,arr,cls="")=>`<tr class="${cls}"><td>${esc(lab)}</td>${arr.map(cel).join("")}${cls==="acum"?'<td class="num">—</td>':cel(T(arr))}</tr>`;
+  return `<div class="head"><div><h2>DRE — demonstrativo de resultado</h2><p class="desc">Receitas e despesas por categoria, mês a mês, pela competência de cada lançamento. "Realizado" mostra só o que já foi pago ou recebido; "Previsto + realizado" inclui o que ainda está em aberto. Base para a prestação de contas anual (CC art. 1.350).</p></div>
+    <div class="btns"><select data-ano aria-label="Ano">${anos.map(a=>`<option ${a===anoDRE?"selected":""}>${a}</option>`).join("")}</select><select data-modo aria-label="Base"><option value="real" ${modoDRE==="real"?"selected":""}>Realizado</option><option value="prev" ${modoDRE==="prev"?"selected":""}>Previsto + realizado</option></select></div></div>
+  <div class="kpis">${kpi("Receitas "+anoDRE,fmtR(T(tR)))}${kpi("Despesas "+anoDRE,fmtR(T(tD)))}${kpi("Resultado "+anoDRE,fmtR(T(res)),"","primary")}</div>
+  ${L.length?`<div class="tw dre" style="margin-top:16px"><table><thead><tr><th>Conta</th>${MESES.map(m=>`<th class="num">${m}</th>`).join("")}<th class="num">Total</th></tr></thead><tbody>
+    <tr class="grp"><td colspan="14">Receitas</td></tr>${R.map(x=>row(x.c,x.v)).join("")}${row("Total de receitas",tR,"sub")}
+    <tr class="grp"><td colspan="14">Despesas</td></tr>${D.map(x=>row(x.c,x.v)).join("")}${row("Total de despesas",tD,"sub")}
+    ${row("Resultado do mês",res,"res")}${row("Resultado acumulado no ano",acum,"acum")}</tbody></table></div>`
+  :`<div class="panel" style="margin-top:16px">${emptyState("Sem lançamentos neste ano",modoDRE==="real"?"Nada foi marcado como pago ou recebido ainda. Escolha \"Previsto + realizado\" para ver a previsão.":"Gere os lançamentos do mês na aba Financeiro.")}</div>`}`;
+};
+
+VIEWS.demandas=()=>`<div class="head"><div><h2>Demandas</h2><p class="desc">Pedidos, avisos de obra, manutenção e questões de convivência, com responsável e prazo.</p></div><div class="btns">${addBtn("demandas","Demanda")}</div></div>
+  ${table("demandas",[{h:"Aberta",f:r=>fmtD(r.data)},{h:"Demanda",wrap:1,f:r=>`<strong>${esc(r.titulo)}</strong>${r.descricao?`<div class="small muted">${esc(r.descricao.slice(0,160))}</div>`:""}`},{h:"Unidade",f:r=>esc(r.unidade)},{h:"Prioridade",f:r=>pill(r.prioridade)},{h:"Responsável",f:r=>esc(r.responsavel)},{h:"Prazo",f:r=>fmtD(r.prazo)},{h:"Situação",f:r=>pill(r.status)}],
+  S.demandas.slice().sort((a,b)=>(a.status==="Resolvida")-(b.status==="Resolvida")||String(a.prazo||"9").localeCompare(String(b.prazo||"9"))))}`;
+
+VIEWS.documentos=()=>`<div class="head"><div><h2>Documentos</h2><p class="desc">Acervo do condomínio: instituição, convenção, regimento, atas, editais, procurações, cartão CNPJ, contratos e certidões.</p></div><div class="btns">${addBtn("documentos","Documento")}</div></div>
+  ${table("documentos",[{h:"Documento",wrap:1,f:r=>`<strong>${esc(r.nome)}</strong>${r.obs?`<div class="small muted">${esc(r.obs.slice(0,180))}</div>`:""}`},{h:"Tipo",f:r=>esc(r.tipo)},{h:"Data",f:r=>fmtD(r.data)},{h:"Registro",wrap:1,f:r=>esc(r.registro)},{h:"Validade",f:r=>r.validade?(r.validade<TODAY?pill("Vencido"):fmtD(r.validade)):"—"},{h:"Arquivo",f:r=>fileLinks(r.arquivos)}],sortBy(S.documentos,"data",-1))}`;
+
+VIEWS.contratos=()=>`<div class="head"><div><h2>Contratos e fornecedores</h2><p class="desc">Contador, seguro, manutenção, segurança e demais serviços contratados ou em cotação.</p></div><div class="btns">${addBtn("contratos","Contrato")}</div></div>
+  ${table("contratos",[{h:"Fornecedor",f:r=>`<strong>${esc(r.nome)}</strong>`},{h:"Serviço",wrap:1,f:r=>esc(r.servico)},{h:"Valor",num:1,f:r=>r.valor?fmtR(num(r.valor)):"—"},{h:"Periodicidade",f:r=>esc(r.periodicidade)},{h:"Vigência",f:r=>fmtD(r.inicio)+" a "+fmtD(r.fim)},{h:"Situação",f:r=>pill(r.status)},{h:"Arquivos",f:r=>fileLinks(r.arquivos)}],sortBy(S.contratos,"nome"))}`;
+
+VIEWS.agenda=()=>`<div class="head"><div><h2>Obrigações recorrentes</h2><p class="desc">O que precisa acontecer todo mês ou todo ano. As obrigações fiscais acessórias do CNPJ dependem de o condomínio ter empregados, contratar serviços com retenção ou ter receitas próprias — confirme a lista com o contador antes de dar como definitiva.</p></div><div class="btns">${addBtn("agenda","Obrigação")}</div></div>
+  ${table("agenda",[{h:"Obrigação",wrap:1,f:r=>`<strong>${esc(r.obrigacao)}</strong>${r.obs?`<div class="small muted">${esc(r.obs)}</div>`:""}`},{h:"Periodicidade",f:r=>esc(r.periodicidade)},{h:"Próximo",f:r=>fmtD(r.proximo)},{h:"Quem",f:r=>esc(r.quem)},{h:"Base",wrap:1,f:r=>esc(r.base)},{h:"Situação",f:r=>pill(r.status)}],sortBy(S.agenda,"proximo"))}`;
+
+VIEWS.ferramentas=()=>`<div class="head"><div><h2>Ferramentas de gestão</h2><p class="desc">Levantamento feito em 06/11/2026. Preços dos sistemas não são publicados pelos fornecedores (só sob consulta), por isso não há valores aqui. Para um condomínio horizontal com poucas unidades, sem portaria e sem funcionários, um sistema completo de administradora tende a ser desproporcional: o essencial é uma conta bancária do condomínio com boleto/Pix, este painel e um contador.</p></div></div>
+  <div class="tools">
+    <div class="tool"><h3>Este painel <span class="pill p-ok">em uso</span></h3><ul><li>Checklist, atas, unidades, caixa, demandas, documentos e obrigações num só lugar</li><li>Compartilhável com os demais condôminos (como leitores ou colaboradores)</li><li>Sem custo; não emite boleto nem faz conciliação bancária</li></ul></div>
+    <div class="tool"><h3>Conta digital para condomínio</h3><ul><li><strong>CondoConta</strong> — banco voltado a condomínios: boletos em lote, prestação de contas em tempo real, app para condôminos</li><li><strong>Superlógica</strong> — conta digital própria integrada ao sistema de gestão (Pix, conciliação, aprovação de despesas pelo app)</li><li>Bancos tradicionais também abrem conta para condomínio com CNPJ; compare tarifas de boleto e Pix</li></ul><p class="small muted">Fonte: SíndicoNet, jul/2022 — confirmar condições atuais com cada banco.</p></div>
+    <div class="tool"><h3>Sistemas de gestão completos</h3><ul><li><strong>Superlógica Condomínios</strong> — cobrança automática, inadimplência, prestação de contas, portaria online, área do condômino</li><li><strong>TownSq</strong> — comunicação, ocorrências, reservas, autorização de visitantes, app</li><li><strong>uCondo</strong> — autorização de visitantes, votações e enquetes</li><li><strong>Condomob</strong> — boletos online e gestão de inadimplência</li></ul><p class="small muted">Úteis se o condomínio crescer, contratar portaria ou administradora.</p></div>
+    <div class="tool"><h3>Assembleia a distância</h3><ul><li>Desde a Lei 14.309/2022, o Código Civil admite assembleia em meio eletrônico (art. 1.354-A), desde que a convenção não proíba e a convocação informe como acessar e votar</li><li>Útil quando nem todos os proprietários moram no condomínio</li></ul></div>
+    <div class="tool"><h3>Contador especializado</h3><ul><li>Faz o pedido de CNPJ (DBE/Redesim) e as obrigações acessórias</li><li>Orienta retenções quando o condomínio contratar serviços</li><li>Prepara a prestação de contas anual</li></ul></div>
+  </div>
+  <div class="panel refs"><h3>Referências</h3><ul class="small">
+    <li>Código Civil, arts. 1.331 a 1.358-A (condomínio edilício), em especial arts. 1.347 a 1.356 (administração e assembleias) e 1.354-A (assembleia eletrônica, incluído pela Lei 14.309/2022).</li>
+    <li>IN RFB nº 2.119/2022, Anexo I (condomínio edilício obrigado ao CNPJ) e Anexo VIII, item 1.1.44 (natureza jurídica 308-5: convenção registrada no RI + ata de eleição do síndico registrada no RTD).</li>
+    <li><a href="https://www.legisweb.com.br/legislacao/?id=439318" target="_blank" rel="noopener">Texto da IN RFB 2.119/2022 (LegisWeb)</a> · <a href="https://www.sindiconet.com.br/informese/integra-administracao-legislacao-codigo-civil-capitulo-sobre-condominios/amp" target="_blank" rel="noopener">Código Civil — capítulo do condomínio (SíndicoNet)</a></li>
+    <li><a href="https://www.sindiconet.com.br/informese/banco-digital-para-condominio-como-funciona-e-por-que-usar-mercado-conteudo-para-administradoras" target="_blank" rel="noopener">Banco digital para condomínio (SíndicoNet, 2022)</a> · <a href="https://www.b2bstack.com.br/product/superlogica-condominios" target="_blank" rel="noopener">Superlógica Condomínios (B2B Stack)</a> · <a href="https://www.quintoandar.com.br/guias/?p=279635" target="_blank" rel="noopener">Aplicativos para condomínio (QuintoAndar)</a></li>
+  </ul></div>`;
+
+const CFG=[["nome","Nome do condomínio"],["endereco","Endereço"],["cnpj","CNPJ"],["matricula","Matrícula / registro da instituição"],["convencao","Convenção (registro)"],["sindico","Síndico(a)"],["subsindico","Subsíndico(a)"],["conselho","Conselho fiscal / consultivo"],["mandatoInicio","Início do mandato","date"],["mandatoFim","Fim do mandato","date"],["taxaMensal","Arrecadação mensal total a ratear (R$) — vazio = soma das despesas fixas"],["vencimentoDia","Dia de vencimento da taxa"],["banco","Banco / agência / conta"],["contador","Contador"],["cartorioRTD","Cartório de Títulos e Documentos"],["areaGleba","Área total da gleba (m²)"],["limiteOcupacao","Limite de ocupação do condomínio (m²)"],["mapaLegenda","Legenda da planta"],["obs","Observações","textarea"]];
+VIEWS.config=()=>`<div class="head"><div><h2>Dados do condomínio</h2><p class="desc">Preenchem a ficha do topo.</p></div></div>
+  <div class="panel"><form id="cfg" class="g2">${CFG.map(([k,l,t])=>`<label class="${t==="textarea"?"full":""}" style="display:grid;gap:4px;font-size:.8rem;font-weight:600;color:var(--ink-2);${t==="textarea"?"grid-column:1/-1":""}">${l}${t==="textarea"?`<textarea name="${k}" ${S.canWrite?"":"disabled"}>${esc(S.config[k])}</textarea>`:`<input name="${k}" type="${t||"text"}" value="${esc(S.config[k])}" ${S.canWrite?"":"disabled"}>`}</label>`).join("")}
+  ${S.canWrite?`<div style="grid-column:1/-1"><button class="btn pri" type="submit">Salvar</button></div>`:""}</form></div>`;
+
+/* ---------- modal ---------- */
+function openForm(col,id){
+  const sc=SCHEMAS[col], rec=id?S[col].find(r=>r.id===id):null, v=rec?{...rec}:{};
+  sc.fields.forEach(f=>{ if(!rec&&f.def) v[f.k]=f.def==="today"?TODAY:f.def; });
+  if(!rec&&col==="checklist") v.ordem=(Math.max(0,...S.checklist.map(x=>num(x.ordem)))+1);
+  const files={}; sc.fields.filter(f=>f.t==="files").forEach(f=>files[f.k]=(v[f.k]||[]).slice());
+  const dls={fases:[...new Set(S.checklist.map(x=>x.fase))],unidades:S.unidades.map(u=>u.unidade)};
+  const ro=!S.canWrite;
+  const field=f=>{const val=v[f.k]??"", req=f.req?' <span class="req">*</span>':"", dis=ro?"disabled":"";
+    let inp;
+    if(f.t==="select") inp=`<select name="${f.k}" ${dis}><option value=""></option>${f.opts.map(o=>`<option ${o===val?"selected":""}>${esc(o)}</option>`).join("")}</select>`;
+    else if(f.t==="textarea") inp=`<textarea name="${f.k}" ${dis}>${esc(val)}</textarea>`;
+    else if(f.t==="files") inp=`<div class="files" data-files="${f.k}"></div>${!ro&&S.assets?`<input type="file" multiple data-up="${f.k}">`:(!S.assets?'<span class="small muted">Anexos indisponíveis nesta visualização.</span>':"")}`;
+    else if(f.t==="money") inp=`<input name="${f.k}" inputmode="decimal" value="${val!==""?esc(String(val).replace(".",",")):""}" ${dis}>`;
+    else inp=`<input name="${f.k}" type="${f.t==="number"?"number":f.t==="date"?"date":"text"}" ${f.t==="number"?'step="any"':""} value="${esc(val)}" ${f.dl?`list="dl-${f.dl}"`:""} ${dis}>`;
+    return `<label class="${f.full?"full":""}">${esc(f.l)}${req}${inp}</label>`;};
+  const ov=$("#overlay");
+  ov.innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt"><header><h3 id="mt">${rec?"Editar":"Novo"} ${sc.nome}</h3><button class="btn small" data-close>Fechar</button></header>
+  <form novalidate>${sc.fields.map(field).join("")}${Object.entries(dls).map(([k,a])=>`<datalist id="dl-${k}">${a.map(x=>`<option value="${esc(x)}">`).join("")}</datalist>`).join("")}<div class="err" hidden></div>
+  <footer><div>${rec&&!ro?`<button type="button" class="btn danger" data-del>Excluir</button>`:""}</div><div class="btns"><button type="button" class="btn" data-close>Cancelar</button>${ro?"":`<button class="btn pri" type="submit">Salvar</button>`}</div></footer></form></div>`;
+  ov.hidden=false;
+  const drawFiles=()=>Object.keys(files).forEach(k=>{const box=ov.querySelector(`[data-files="${k}"]`); box.innerHTML=files[k].length?files[k].map((f,i)=>`<span class="chip"><a href="${esc(f.url||"/_blob/"+f.id)}" target="_blank" rel="noopener">${esc(f.name||"arquivo")}</a>${ro?"":`<button type="button" class="btn small" data-rm="${k}:${i}" aria-label="Remover">×</button>`}</span>`).join(""):'<span class="small muted">Nenhum arquivo.</span>';});
+  drawFiles();
+  const first=ov.querySelector("input,select,textarea"); first&&first.focus();
+  ov.onclick=async e=>{
+    if(e.target===ov||e.target.closest("[data-close]")){closeForm();return;}
+    const rm=e.target.closest("[data-rm]"); if(rm){const [k,i]=rm.dataset.rm.split(":"); files[k].splice(+i,1); drawFiles(); return;}
+    const del=e.target.closest("[data-del]"); if(del){ if(!del.classList.contains("armed")){del.classList.add("armed");del.textContent="Confirmar exclusão";return;}
+      try{await db.doc(col+"/"+id).delete(); closeForm(); toast("Excluído.");}catch(err){toast("Não foi possível excluir.");} }
+  };
+  ov.onchange=async e=>{const up=e.target.closest("[data-up]"); if(!up) return; const k=up.dataset.up;
+    for(const file of up.files){ try{ toast("Enviando "+file.name+"…"); const r=await S.assets.upload(file); files[k].push({id:r.id,url:r.url,name:file.name}); drawFiles(); }catch(err){ toast("Falha ao enviar "+file.name); } }
+    up.value=""; };
+  ov.querySelector("form").onsubmit=async e=>{e.preventDefault(); if(ro) return;
+    const fd=new FormData(e.target), out={}, err=ov.querySelector(".err"); let miss=[];
+    sc.fields.forEach(f=>{ if(f.t==="files"){out[f.k]=files[f.k];return;} let x=fd.get(f.k); x=x==null?"":String(x).trim();
+      if(f.t==="money"){ x=parseMoney(x); } else if(f.t==="number"){ x=x===""?null:parseFloat(x); }
+      if(f.req&&(x===""||x==null)) miss.push(f.l); out[f.k]=x===""?null:x; });
+    if(miss.length){err.textContent="Preencha: "+miss.join(", ");err.hidden=false;return;}
+    if(col==="checklist"&&out.status==="Concluído"&&!out.concluidoEm) out.concluidoEm=TODAY;
+    out.atualizado=new Date().toISOString();
+    try{ const ref=id?db.doc(col+"/"+id):db.collection(col).doc(); await ref.set({...(rec?stripId(rec):{}),...out}); closeForm(); toast("Salvo."); }
+    catch(x){ err.textContent=x&&x.code==="invalid_argument"?"Você não tem permissão para alterar este painel.":"Não foi possível salvar. Tente de novo."; err.hidden=false; }
+  };
+}
+const stripId=r=>{const o={...r}; delete o.id; return o;};
+function closeForm(){ const ov=$("#overlay"); ov.hidden=true; ov.innerHTML=""; schedule(); }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("#overlay").hidden) closeForm();
+  if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-edit]")){e.preventDefault(); openForm(e.target.dataset.edit,e.target.dataset.id);} });
+
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-tab],[data-go]"); if(t){ tab=t.dataset.tab||t.dataset.go; try{localStorage.setItem("cond.tab",tab);}catch(x){} render(); window.scrollTo({top:0}); return; }
+  const n=e.target.closest("[data-new]"); if(n){ if(!db){toast("Banco de dados indisponível nesta visualização.");return;} openForm(n.dataset.new); return; }
+  if(e.target.closest("a")) return;
+  const ed=e.target.closest("[data-edit]"); if(ed&&db){ openForm(ed.dataset.edit,ed.dataset.id); }
+});
+document.addEventListener("change",async e=>{
+  const ck=e.target.closest("[data-check]"), st=e.target.closest("[data-status]");
+  if(!(ck||st)||!db) return;
+  const id=(ck||st).dataset.check||(ck||st).dataset.status; const status=ck?(ck.checked?"Concluído":"Pendente"):st.value;
+  try{ await db.doc("checklist/"+id).update({status,concluidoEm:status==="Concluído"?TODAY:null,atualizado:new Date().toISOString()}); }catch(x){ toast("Não foi possível atualizar."); schedule(); }
+});
+document.addEventListener("change",e=>{
+  if(e.target.matches("[data-mes]")&&e.target.value){ mesRef=e.target.value; render(); }
+  else if(e.target.matches("[data-ano]")){ anoDRE=e.target.value; render(); }
+  else if(e.target.matches("[data-modo]")){ modoDRE=e.target.value; render(); } });
+document.addEventListener("click",async e=>{
+  const pg=e.target.closest("[data-pay]"); if(pg&&db){ const l=S.financeiro.find(x=>x.id===pg.dataset.pay); if(!l) return;
+    if(l.valor==null){ toast("Informe o valor antes de marcar."); openForm("financeiro",l.id); return; }
+    try{ await db.doc("financeiro/"+l.id).update({status:"Pago/recebido",pagoEm:TODAY,atualizado:new Date().toISOString()}); toast("Marcado."); }catch(x){ toast("Não foi possível atualizar."); } return; }
+  const g=e.target.closest("[data-gerar]"); if(g&&db){ g.disabled=true; let n=0;
+    for(const c of S.contas.filter(c=>c.ativa!=="Não")){ const id=lancId(mesRef,c.id); if(S.financeiro.some(x=>x.id===id)) continue;
+      const d=Math.min(28,Math.max(1,parseInt(c.diaVenc)||parseInt(S.config.vencimentoDia)||5)); const v=valorConta(c).v;
+      try{ await db.doc("financeiro/"+id).set({data:mesRef+"-01",competencia:mesRef,vencimento:mesRef+"-"+String(d).padStart(2,"0"),tipo:c.tipo,descricao:c.descricao+" — "+ymLabel(mesRef),categoria:c.categoria||null,unidade:c.unidade||null,valor:v,status:"Previsto",contaId:c.id,atualizado:new Date().toISOString()}); n++; }catch(x){ toast("Falha ao gerar: "+c.descricao); } }
+    toast(n+" lançamento(s) gerado(s)."); } });
+document.addEventListener("change",async e=>{ const i=e.target.closest("[data-mapa]"); if(!i||!i.files[0]||!db||!S.assets) return;
+  try{ toast("Enviando planta…"); const r=await S.assets.upload(i.files[0]); await db.doc("config/geral").set({...S.config,mapa:{id:r.id,url:r.url,name:i.files[0].name}}); toast("Planta atualizada."); }catch(x){ toast("Não foi possível enviar a planta."); } });
+document.addEventListener("submit",async e=>{ if(e.target.id!=="cfg") return; e.preventDefault(); if(!db) return;
+  const fd=new FormData(e.target), out={}; CFG.forEach(([k])=>out[k]=String(fd.get(k)||"").trim()||null);
+  try{ await db.doc("config/geral").set({...S.config,...out}); toast("Dados salvos."); }catch(x){ toast("Não foi possível salvar."); } });
+
+/* ---------- boot (GitHub Pages + Google Apps Script) ---------- */
+const API_URL="__API_URL__";
+const API={code:"",nivel:null,data:{},loaded:false,L:{},Lcfg:[]};
+try{ API.code=localStorage.getItem("cond.code")||""; }catch(x){}
+async function api(body){
+  const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({code:API.code,...body})});
+  return r.json();
+}
+const snapOf=c=>({docs:(API.data[c]||[]).map(o=>({id:o.id,data:()=>{const x={...o};delete x.id;return x;}})),metadata:{fromCache:false}});
+const cfgSnap=()=>{const o=(API.data.config||[]).find(x=>x.id==="geral");return {exists:!!o,data:()=>{const x={...o};delete x.id;return x;}};};
+function emit(){ Object.keys(API.L).forEach(c=>API.L[c].forEach(cb=>cb(snapOf(c)))); API.Lcfg.forEach(cb=>cb(cfgSnap())); }
+const novoId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+async function grava(action,c,id,d){
+  if(API.nivel!=="edicao"){ const e=new Error("somente leitura"); e.code="invalid_argument"; throw e; }
+  const arr=API.data[c]=API.data[c]||[], i=arr.findIndex(x=>x.id===id), antes=i>=0?{...arr[i]}:null;
+  if(action==="delete"){ if(i>=0) arr.splice(i,1); }
+  else { const novo=action==="update"&&antes?{...antes,...d,id}:{...d,id}; if(i>=0) arr[i]=novo; else arr.push(novo); }
+  emit();
+  const r=await api({action,col:c,id,data:d});
+  if(!r||!r.ok){ await carregar(); const e=new Error(r&&r.erro||"erro"); e.code=r&&r.erro==="somente_leitura"?"invalid_argument":"erro"; throw e; }
+}
+const docRef=(c,id)=>({id,set:d=>grava("set",c,id,d),update:d=>grava("update",c,id,d),delete:()=>grava("delete",c,id),
+  onSnapshot:cb=>{ if(c==="config"){ API.Lcfg.push(cb); if(API.loaded) cb(cfgSnap()); } return ()=>{}; }});
+const DB={ collection:c=>({ doc:id=>docRef(c,id||novoId()), onSnapshot:(cb)=>{ (API.L[c]=API.L[c]||[]).push(cb); if(API.loaded) cb(snapOf(c)); return ()=>{}; } }),
+  doc:p=>{ const [c,id]=p.split("/"); return docRef(c,id); } };
+const ASSETS={ upload:file=>new Promise((res,rej)=>{ if(file.size>20*1024*1024){rej(new Error("grande"));return;}
+  const fr=new FileReader(); fr.onload=async()=>{ try{ const b64=String(fr.result).split(",")[1]; const r=await api({action:"upload",nome:file.name,mime:file.type,base64:b64});
+    if(!r.ok) throw new Error(r.erro); res({id:r.id,url:r.url,sizeBytes:file.size,contentType:file.type}); }catch(e){rej(e);} }; fr.onerror=rej; fr.readAsDataURL(file); }) };
+
+async function carregar(){
+  const r=await api({action:"ler"});
+  if(!r||!r.ok){ return r; }
+  API.nivel=r.nivel; API.data=r.dados||{}; API.loaded=true;
+  S.canWrite=r.nivel==="edicao"; S.assets=S.canWrite?ASSETS:null; emit(); render(); marcaModo(); return r;
+}
+function marcaModo(){ const b=$("#modo"); if(!b) return; b.innerHTML=`<span>${API.nivel==="edicao"?"Modo edição":"Modo leitura"}</span><button class="btn small" data-sair>Sair</button>`; b.hidden=false; }
+function telaCodigo(msg){
+  const ov=$("#overlay");
+  ov.innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-labelledby="lg" style="max-width:420px"><header><h3 id="lg">Acesso ao painel</h3></header>
+  <form id="fcod" novalidate><label class="full">Código de acesso<input name="c" type="password" autocomplete="current-password" required></label>
+  <p class="small muted full">O código de leitura mostra o painel; o código de edição permite alterar. Peça ao síndico.</p>
+  <div class="err full" ${msg?"":"hidden"}>${esc(msg||"")}</div>
+  <footer><div></div><div class="btns"><button class="btn pri" type="submit">Entrar</button></div></footer></form></div>`;
+  ov.hidden=false; ov.onclick=null; ov.onchange=null; ov.querySelector("input").focus();
+  ov.querySelector("#fcod").onsubmit=async e=>{ e.preventDefault(); API.code=String(new FormData(e.target).get("c")||"").trim(); if(!API.code) return;
+    e.target.querySelector("button").disabled=true; const r=await carregar().catch(()=>null);
+    if(r&&r.ok){ try{localStorage.setItem("cond.code",API.code);}catch(x){} ov.hidden=true; ov.innerHTML=""; }
+    else telaCodigo(r&&r.erro==="codigo"?"Código inválido.":"Não foi possível conectar. Tente de novo."); };
+}
+document.addEventListener("click",e=>{ if(e.target.closest("[data-sair]")){ try{localStorage.removeItem("cond.code");}catch(x){} API.code=""; API.nivel=null; API.data={}; S.canWrite=false; emit(); render(); $("#modo").hidden=true; telaCodigo(); } });
+
+render();
+(async()=>{
+  const banner=$("#banner");
+  db=DB; S.canWrite=false;
+  COLS.forEach(c=>db.collection(c).onSnapshot(s=>{ S[c]=s.docs.map(d=>({id:d.id,...d.data()})); schedule(); }));
+  db.doc("config/geral").onSnapshot(s=>{ S.config=s.exists?{...s.data()}:{}; schedule(); });
+  if(!API.code){ telaCodigo(); return; }
+  const timer=setTimeout(()=>{banner.textContent="Carregando os dados… a conexão está lenta.";banner.hidden=false;},10000);
+  const r=await carregar().catch(()=>null); clearTimeout(timer); banner.hidden=true;
+  if(!r||!r.ok) telaCodigo(r&&r.erro==="codigo"?"O código salvo não vale mais. Digite o novo código.":"Não foi possível carregar os dados.");
+  setInterval(()=>{ if(API.code&&$("#overlay").hidden) carregar().catch(()=>{}); },120000);
+  window.addEventListener("focus",()=>{ if(API.code&&$("#overlay").hidden) carregar().catch(()=>{}); });
+})();
+})();
+</script>
+
+</body>
+</html>
